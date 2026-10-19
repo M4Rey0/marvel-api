@@ -11,6 +11,7 @@ import { In, Repository } from 'typeorm';
 import { Character } from '../characters/entities/character.entity';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { Team } from './entities/team.entity';
+import { UpdateTeamDto } from './dto/update-team.dto';
 
 @Injectable()
 export class TeamsService {
@@ -113,4 +114,34 @@ export class TeamsService {
 
     return savedTeam;
   }
+
+    async update(
+    id: number,
+    dto: UpdateTeamDto,
+  ): Promise<Team> {
+    
+    const team = await this.findOne(id);
+
+    const teamWithSameName =
+      await this.teamRepository.findOne({
+        where: { name: dto.name },
+      });
+
+    if (
+      teamWithSameName &&
+      teamWithSameName.id !== id
+    ) {
+      throw new ConflictException(
+        `Ya existe un equipo llamado ${dto.name}`,
+      );
+    }
+
+    team.name = dto.name;
+    team.base = dto.base;
+    team.foundedYear = dto.foundedYear;
+    team.active = dto.active;
+
+    return this.teamRepository.save(team);
+  }
+
 }

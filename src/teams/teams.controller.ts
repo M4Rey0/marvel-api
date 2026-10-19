@@ -5,10 +5,12 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 
 import { CreateTeamDto } from './dto/create-team.dto';
 import { TeamsService } from './teams.service';
+import { UpdateTeamDto } from './dto/update-team.dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -36,4 +38,16 @@ export class TeamsController {
       createTeamDto,
     );
   }
+
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTeamDto: UpdateTeamDto,
+  ) {
+    return this.teamsService.update(
+      id,
+      updateTeamDto,
+    );
+  }
+
 }

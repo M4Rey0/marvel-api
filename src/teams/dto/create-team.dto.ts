@@ -35,3 +35,4 @@ export class CreateTeamDto {
   @IsInt({ each: true })
   characterIds?: number[];
 }
+
