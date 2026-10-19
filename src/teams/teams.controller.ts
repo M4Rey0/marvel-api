@@ -1,10 +1,13 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
+  Post,
 } from '@nestjs/common';
 
+import { CreateTeamDto } from './dto/create-team.dto';
 import { TeamsService } from './teams.service';
 
 @Controller('teams')
@@ -23,5 +26,14 @@ export class TeamsController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.teamsService.findOne(id);
+  }
+
+  @Post()
+  create(
+    @Body() createTeamDto: CreateTeamDto,
+  ) {
+    return this.teamsService.create(
+      createTeamDto,
+    );
   }
 }

@@ -1,11 +1,15 @@
 import {
+  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
+import { Character } from '../characters/entities/character.entity';
+import { CreateTeamDto } from './dto/create-team.dto';
 import { Team } from './entities/team.entity';
 
 @Injectable()
@@ -13,6 +17,9 @@ export class TeamsService {
   constructor(
     @InjectRepository(Team)
     private readonly teamRepository: Repository<Team>,
+
+    @InjectRepository(Character)
+    private readonly characterRepository: Repository<Character>,
   ) {}
 
   findAll(): Promise<Team[]> {
@@ -31,5 +38,79 @@ export class TeamsService {
     }
 
     return team;
+  }
+
+  async create(dto: CreateTeamDto): Promise<Team> {
+  
+    const existingTeam =
+      await this.teamRepository.findOne({
+        where: { name: dto.name },
+      });
+
+    if (existingTeam) {
+      throw new ConflictException(
+        `Ya existe un equipo llamado ${dto.name}`,
+      );
+    }
+
+    const characterIds = dto.characterIds ?? [];
+
+    
+    if (
+      characterIds.length > 0 &&
+      dto.active === false
+    ) {
+      throw new BadRequestException(
+        'No se pueden asignar personajes a un equipo inactivo',
+      );
+    }
+
+    
+    let characters: Character[] = [];
+
+    if (characterIds.length > 0) {
+      characters =
+        await this.characterRepository.findBy({
+          id: In(characterIds),
+        });
+
+      if (characters.length !== characterIds.length) {
+        const foundIds = characters.map(
+          (character) => character.id,
+        );
+
+        const missingIds = characterIds.filter(
+          (id) => !foundIds.includes(id),
+        );
+
+        throw new NotFoundException(
+          `No existen los personajes con id: ${missingIds.join(', ')}`,
+        );
+      }
+    }
+
+    
+    const team = this.teamRepository.create({
+      name: dto.name,
+      base: dto.base ?? null,
+      foundedYear: dto.foundedYear ?? null,
+      active: dto.active ?? true,
+    });
+
+    const savedTeam =
+      await this.teamRepository.save(team);
+
+    
+    if (characters.length > 0) {
+      for (const character of characters) {
+        character.teamId = savedTeam.id;
+      }
+
+      await this.characterRepository.save(
+        characters,
+      );
+    }
+
+    return savedTeam;
   }
 }
