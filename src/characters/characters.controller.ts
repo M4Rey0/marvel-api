@@ -1,13 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
-  Patch,
 } from '@nestjs/common';
 
 import { CharactersService } from './characters.service';
@@ -75,5 +76,12 @@ export class CharactersController {
       id,
       updateStatusDto,
     );
+  }
+
+  @Delete(':id')
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.charactersService.remove(id);
   }
 }

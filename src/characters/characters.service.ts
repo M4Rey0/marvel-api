@@ -209,4 +209,21 @@ export class CharactersService {
 
     return this.characterRepository.save(character);
     }
+
+    async remove(id: number): Promise<Character> {
+    const character =
+        await this.characterRepository.findOne({
+        where: { id },
+        });
+
+    if (!character) {
+        throw new NotFoundException(
+        `No existe un personaje con id ${id}`,
+        );
+    }
+
+    await this.characterRepository.remove(character);
+
+    return character;
+    }
 }
