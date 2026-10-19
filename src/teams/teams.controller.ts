@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Delete,
 } from '@nestjs/common';
 
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -49,5 +50,12 @@ export class TeamsController {
       updateTeamDto,
     );
   }
+
+@Delete(':id')
+remove(
+  @Param('id', ParseIntPipe) id: number,
+) {
+  return this.teamsService.remove(id);
+}
 
 }

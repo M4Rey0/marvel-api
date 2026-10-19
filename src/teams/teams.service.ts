@@ -144,4 +144,27 @@ export class TeamsService {
     return this.teamRepository.save(team);
   }
 
+  async remove(id: number): Promise<Team> {
+  
+  const team = await this.findOne(id);
+
+  
+  const characterCount =
+    await this.characterRepository.count({
+      where: { teamId: id },
+    });
+
+  
+  if (characterCount > 0) {
+    throw new ConflictException(
+      'No se puede eliminar un equipo con personajes asociados',
+    );
+  }
+
+  
+  await this.teamRepository.remove(team);
+
+  return team;
+}
+
 }
