@@ -1,13 +1,16 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
+  Post,
   Query,
 } from '@nestjs/common';
 
 import { CharactersService } from './characters.service';
 import { CharacterStatus } from './enums/character-status.enum';
+import { CreateCharacterDto } from './dto/create-character.dto';
 
 @Controller('characters')
 export class CharactersController {
@@ -36,5 +39,15 @@ export class CharactersController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.charactersService.findOne(id);
+  }
+
+  @Post()
+  create(
+    @Body()
+    createCharacterDto: CreateCharacterDto,
+  ) {
+    return this.charactersService.create(
+      createCharacterDto,
+    );
   }
 }
