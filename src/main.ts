@@ -21,7 +21,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Marvel Characters API')
     .setDescription(
-      'API REST para administrar equipos y personajes del universo Marvel (Que loco hacer esto)',
+      'API REST para administrar equipos y personajes del universo Marvel',
     )
     .setVersion('1.0')
     .addTag('teams')
