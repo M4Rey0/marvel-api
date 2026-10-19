@@ -11,10 +11,18 @@ export class Team {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 100, unique: true })
+  @Column({
+    type: 'varchar',
+    length: 100,
+    unique: true,
+  })
   name: string;
 
-  @Column({ length: 150, nullable: true })
+  @Column({
+    type: 'varchar',
+    length: 150,
+    nullable: true,
+  })
   base: string | null;
 
   @Column({
@@ -24,7 +32,10 @@ export class Team {
   })
   foundedYear: number | null;
 
-  @Column({ default: true })
+  @Column({
+    type: 'boolean',
+    default: true,
+  })
   active: boolean;
 
   @CreateDateColumn({
