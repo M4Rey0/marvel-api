@@ -10,11 +10,16 @@ import {
   Patch,
 } from '@nestjs/common';
 
+import {
+  ApiTags,
+} from '@nestjs/swagger';
+
 import { CreateTeamDto } from './dto/create-team.dto';
 import { TeamsService } from './teams.service';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { AssignCharactersDto } from './dto/assign-characters.dto';
 
+@ApiTags('teams')
 @Controller('teams')
 export class TeamsController {
   constructor(

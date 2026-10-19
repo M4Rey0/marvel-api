@@ -11,12 +11,17 @@ import {
   Query,
 } from '@nestjs/common';
 
+import {
+  ApiTags,
+} from '@nestjs/swagger';
+
 import { CharactersService } from './characters.service';
 import { CharacterStatus } from './enums/character-status.enum';
 import { CreateCharacterDto } from './dto/create-character.dto';
 import { UpdateCharacterDto } from './dto/update-character.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 
+@ApiTags('characters')
 @Controller('characters')
 export class CharactersController {
   constructor(
