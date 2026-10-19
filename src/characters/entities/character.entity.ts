@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { CharacterStatus } from '../enums/character-status.enum';
+
 @Entity('characters')
 export class Character {
   @PrimaryGeneratedColumn()
@@ -42,7 +44,7 @@ export class Character {
     type: 'varchar',
     length: 20,
   })
-  status: string;
+  status: CharacterStatus;
 
   @Column({
     name: 'is_villain',
