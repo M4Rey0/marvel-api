@@ -12,6 +12,7 @@ import { Character } from '../characters/entities/character.entity';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { Team } from './entities/team.entity';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { AssignCharactersDto } from './dto/assign-characters.dto';
 
 @Injectable()
 export class TeamsService {
@@ -173,6 +174,47 @@ async findCharacters(id: number): Promise<Character[]> {
   return this.characterRepository.find({
     where: { teamId: id },
   });
+}
+
+async assignCharacters(
+  id: number,
+  dto: AssignCharactersDto,
+): Promise<Character[]> {
+  const team = await this.findOne(id);
+
+  if (!team.active) {
+    throw new BadRequestException(
+      'No se pueden asignar personajes a un equipo inactivo',
+    );
+  }
+
+  const characters =
+    await this.characterRepository.findBy({
+      id: In(dto.characterIds),
+    });
+
+  if (characters.length !== dto.characterIds.length) {
+    const foundIds = characters.map(
+      (character) => character.id,
+    );
+
+    const missingIds = dto.characterIds.filter(
+      (characterId) =>
+        !foundIds.includes(characterId),
+    );
+
+    throw new NotFoundException(
+      `No existen los personajes con id: ${missingIds.join(', ')}`,
+    );
+  }
+
+  for (const character of characters) {
+    character.teamId = team.id;
+  }
+
+  return this.characterRepository.save(
+    characters,
+  );
 }
 
 }

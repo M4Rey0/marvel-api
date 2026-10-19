@@ -7,11 +7,13 @@ import {
   Post,
   Put,
   Delete,
+  Patch,
 } from '@nestjs/common';
 
 import { CreateTeamDto } from './dto/create-team.dto';
 import { TeamsService } from './teams.service';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { AssignCharactersDto } from './dto/assign-characters.dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -63,6 +65,17 @@ findCharacters(
   @Param('id', ParseIntPipe) id: number,
 ) {
   return this.teamsService.findCharacters(id);
+}
+
+@Patch(':id/characters')
+assignCharacters(
+  @Param('id', ParseIntPipe) id: number,
+  @Body() assignCharactersDto: AssignCharactersDto,
+) {
+  return this.teamsService.assignCharacters(
+    id,
+    assignCharactersDto,
+  );
 }
 
 }
