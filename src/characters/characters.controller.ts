@@ -5,12 +5,16 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
+  Patch,
 } from '@nestjs/common';
 
 import { CharactersService } from './characters.service';
 import { CharacterStatus } from './enums/character-status.enum';
 import { CreateCharacterDto } from './dto/create-character.dto';
+import { UpdateCharacterDto } from './dto/update-character.dto';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @Controller('characters')
 export class CharactersController {
@@ -48,6 +52,28 @@ export class CharactersController {
   ) {
     return this.charactersService.create(
       createCharacterDto,
+    );
+  }
+
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCharacterDto: UpdateCharacterDto,
+  ) {
+    return this.charactersService.update(
+      id,
+      updateCharacterDto,
+    );
+  }
+
+  @Patch(':id/status')
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateStatusDto: UpdateStatusDto,
+  ) {
+    return this.charactersService.updateStatus(
+      id,
+      updateStatusDto,
     );
   }
 }

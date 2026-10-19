@@ -12,6 +12,8 @@ import { Team } from '../teams/entities/team.entity';
 import { Character } from './entities/character.entity';
 import { CharacterStatus } from './enums/character-status.enum';
 import { CreateCharacterDto } from './dto/create-character.dto';
+import { UpdateCharacterDto } from './dto/update-character.dto';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @Injectable()
 export class CharactersService {
@@ -118,5 +120,93 @@ export class CharactersService {
         character,
     );
     }
+
+    async update(
+    id: number,
+    dto: UpdateCharacterDto,
+    ): Promise<Character> {
+
+    const character =
+        await this.characterRepository.findOne({
+        where: { id },
+        });
+
+    if (!character) {
+        throw new NotFoundException(
+        `No existe un personaje con id ${id}`,
+        );
+    }
+
+    const characterWithSameAlias =
+        await this.characterRepository.findOne({
+        where: { alias: dto.alias },
+        });
+
+    if (
+        characterWithSameAlias &&
+        characterWithSameAlias.id !== id
+    ) {
+        throw new ConflictException(
+        `Ya existe un personaje con el alias ${dto.alias}`,
+        );
+    }
+
+    if (dto.teamId !== undefined && dto.teamId !== null) {
+        const team =
+        await this.teamRepository.findOne({
+            where: { id: dto.teamId },
+        });
+
+        if (!team) {
+        throw new NotFoundException(
+            `No existe un equipo con id ${dto.teamId}`,
+        );
+        }
+
+        if (!team.active) {
+        throw new BadRequestException(
+            'No se puede asignar un personaje a un equipo inactivo',
+        );
+        }
+    }
+
+    character.realName = dto.realName;
+    character.alias = dto.alias;
+    character.mainPower = dto.mainPower;
+    character.powerLevel = dto.powerLevel;
+    character.status = dto.status;
+    character.isVillain = dto.isVillain;
+    character.teamId = dto.teamId ?? null;
+
+    return this.characterRepository.save(character);
+    }
   
+    async updateStatus(
+    id: number,
+    dto: UpdateStatusDto,
+    ): Promise<Character> {
+    const character =
+        await this.characterRepository.findOne({
+        where: { id },
+        });
+
+    if (!character) {
+        throw new NotFoundException(
+        `No existe un personaje con id ${id}`,
+        );
+    }
+
+    if (
+        character.status === CharacterStatus.RETIRED &&
+        dto.status === CharacterStatus.INJURED
+    ) {
+        throw new BadRequestException(
+        'Un personaje RETIRED no puede pasar directamente a INJURED',
+        );
+    }
+
+    character.status = dto.status;
+
+    return this.characterRepository.save(character);
+    }
 }
