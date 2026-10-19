@@ -167,4 +167,12 @@ export class TeamsService {
   return team;
 }
 
+async findCharacters(id: number): Promise<Character[]> {
+  await this.findOne(id);
+
+  return this.characterRepository.find({
+    where: { teamId: id },
+  });
+}
+
 }

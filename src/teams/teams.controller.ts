@@ -58,4 +58,11 @@ remove(
   return this.teamsService.remove(id);
 }
 
+@Get(':id/characters')
+findCharacters(
+  @Param('id', ParseIntPipe) id: number,
+) {
+  return this.teamsService.findCharacters(id);
+}
+
 }
